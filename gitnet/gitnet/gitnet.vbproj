@@ -6,7 +6,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{FA3F0E13-5F78-4ABF-8ABA-327A66473851}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <StartupObject>gitnet.Module1</StartupObject>
+    <StartupObject>gitnet.Program</StartupObject>
     <RootNamespace>gitnet</RootNamespace>
     <AssemblyName>gitnet</AssemblyName>
     <FileAlignment>512</FileAlignment>
@@ -92,7 +92,7 @@
     <Import Include="System.Threading.Tasks" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Module1.vb" />
+    <Compile Include="Program.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
       <AutoGen>True</AutoGen>
