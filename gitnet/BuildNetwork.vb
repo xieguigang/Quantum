@@ -16,7 +16,7 @@ Public Module BuildNetwork
     ''' <param name="username"></param>
     ''' <param name="recursionDepth">从最开始的第一个用户开始递归，的最深的深度</param>
     ''' <returns></returns>
-    Public Function FromUser(username As String, Optional recursionDepth% = 10, Optional maxFollows% = 100) As Network
+    Public Function FromUser(username As String, Optional recursionDepth% = 1, Optional maxFollows% = 50) As Network
         Dim followers As User() = username.Followers(maxFollows)
         Dim followings As User() = username.Following(maxFollows)
         Dim visited As New List(Of String) '  A list of user name that we already have visited, to avoid the dead loop.
@@ -75,22 +75,10 @@ Public Module BuildNetwork
     ''' <returns></returns>
     <Extension>
     Private Function __visit(username$, recursionDepth%, visited As List(Of String), maxFollows%) As UserModel()
-        Dim followers, followings As User()
-
-        If recursionDepth < 0 Then
-            Return {}
-        Else
-            If visited.IndexOf(username) > -1 Then
-                Return {}
-            Else
-                visited += username
-            End If
-        End If
+        Dim followings = username.Following(maxFollows)
+        Dim followers = username.Followers(maxFollows)
 
         Dim out As New List(Of UserModel)
-
-        followings = username.Following(maxFollows)
-        followers = username.Followers(maxFollows)
 
         out += New UserModel With {
             .User = New User With {
@@ -99,6 +87,16 @@ Public Module BuildNetwork
             .Followers = followers.ToArray(Function(u) u.login),
             .Followings = followings.ToArray(Function(u) u.login)
         }
+
+        If recursionDepth < 0 Then
+            Return out
+        Else
+            If visited.IndexOf(username) > -1 Then
+                Return out
+            Else
+                visited += username
+            End If
+        End If
 
         For Each follower In followers
             out += follower.login.__visit(recursionDepth - 1, visited, maxFollows)

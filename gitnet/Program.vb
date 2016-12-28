@@ -9,7 +9,8 @@ Module Program
 
         WebAPI.Proxy = "http://127.0.0.1:8087/"
 
-        Call BuildNetwork.FromUser("xieguigang", 2, 65).Save(App.HOME & "/xieguigang/")
+        Call BuildNetwork.FromUser("xieguigang", 0, 65).Save(App.HOME & "/xieguigang/")
 
+        Pause()
     End Sub
 End Module
