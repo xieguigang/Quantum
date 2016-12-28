@@ -1,7 +1,9 @@
 ﻿Imports System.Runtime.CompilerServices
+Imports System.Text
 Imports Microsoft.VisualBasic.Data.visualize.Network.FileStream
 Imports Microsoft.VisualBasic.Language
 Imports Microsoft.VisualBasic.Linq
+Imports Microsoft.VisualBasic.Serialization.JSON
 Imports Microsoft.VisualBasic.Webservices.Github.Class
 Imports Microsoft.VisualBasic.Webservices.Github.WebAPI
 
@@ -16,17 +18,22 @@ Public Module BuildNetwork
     ''' <param name="username"></param>
     ''' <param name="recursionDepth">从最开始的第一个用户开始递归，的最深的深度</param>
     ''' <returns></returns>
-    Public Function FromUser(username As String, Optional recursionDepth% = 1, Optional maxFollows% = 50) As Network
+    Public Function FromUser(username As String, Optional recursionDepth% = 1, Optional maxFollows% = 50, Optional work$ = Nothing) As Network
+
+        If work Is Nothing Then
+            work = App.HOME & "/" & username
+        End If
+
         Dim followers As User() = username.Followers(maxFollows)
         Dim followings As User() = username.Following(maxFollows)
         Dim visited As New List(Of String) '  A list of user name that we already have visited, to avoid the dead loop.
         Dim gets As New List(Of UserModel)
 
         For Each user As User In followers
-            gets += user.login.__visit(recursionDepth, visited, maxFollows)
+            gets += user.login.__visit(recursionDepth, visited, maxFollows, work, $"/{username}/{NameOf(followers)}")
         Next
         For Each user As User In followings
-            gets += user.login.__visit(recursionDepth, visited, maxFollows)
+            gets += user.login.__visit(recursionDepth, visited, maxFollows, work, $"/{username}/{NameOf(followings)}")
         Next
 
         ' build network model
@@ -74,7 +81,7 @@ Public Module BuildNetwork
     ''' <param name="visited"></param>
     ''' <returns></returns>
     <Extension>
-    Private Function __visit(username$, recursionDepth%, visited As List(Of String), maxFollows%) As UserModel()
+    Private Function __visit(username$, recursionDepth%, visited As List(Of String), maxFollows%, work$, parent$) As UserModel()
         Dim followers, followings As User()
 
         If visited.IndexOf(username) > -1 Then
@@ -87,6 +94,16 @@ Public Module BuildNetwork
         End If
 
         Dim out As New List(Of UserModel)
+        Dim save As Func(Of UserModel()) =
+            Function()
+                Dim path$ = work & $"/{parent}/{username}.json"
+
+                Call out _
+                    .GetJson(True) _
+                    .SaveTo(path, encoding:=Encoding.UTF8)
+
+                Return out.ToArray
+            End Function
 
         out += New UserModel With {
             .User = New User With {
@@ -97,19 +114,19 @@ Public Module BuildNetwork
         }
 
         If recursionDepth < 0 Then
-            Return out
+            Return save()
         Else
 
         End If
 
-        For Each follower In followers
-            out += follower.login.__visit(recursionDepth - 1, visited, maxFollows)
+        For Each follower As User In followers
+            out += follower.login.__visit(recursionDepth - 1, visited, maxFollows, work, $"/{parent}/{username}/{NameOf(follower)}")
         Next
         For Each following As User In followings
-            out += following.login.__visit(recursionDepth - 1, visited, maxFollows)
+            out += following.login.__visit(recursionDepth - 1, visited, maxFollows, work, $"/{parent}/{username}/{NameOf(following)}")
         Next
 
-        Return out
+        Return save()
     End Function
 
     ''' <summary>
