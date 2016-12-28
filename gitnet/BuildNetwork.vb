@@ -1,6 +1,7 @@
 ﻿Imports System.Runtime.CompilerServices
 Imports Microsoft.VisualBasic.Data.visualize.Network.FileStream
 Imports Microsoft.VisualBasic.Language
+Imports Microsoft.VisualBasic.Linq
 Imports Microsoft.VisualBasic.Webservices.Github.Class
 Imports Microsoft.VisualBasic.Webservices.Github.WebAPI
 
@@ -67,7 +68,39 @@ Public Module BuildNetwork
 
     <Extension>
     Private Function __visit(username$, recursionDepth%, visited As List(Of String)) As UserModel()
+        Dim followers, followings As User()
 
+        If recursionDepth < 0 Then
+            Return {}
+        Else
+            If visited.IndexOf(username) > -1 Then
+                Return {}
+            Else
+                visited += username
+            End If
+        End If
+
+        Dim out As New List(Of UserModel)
+
+        followings = username.Following
+        followers = username.Followers
+
+        out += New UserModel With {
+            .User = New User With {
+                .login = username
+            },
+            .Followers = followers.ToArray(Function(u) u.login),
+            .Followings = followings.ToArray(Function(u) u.login)
+        }
+
+        For Each follower In followers
+            out += follower.login.__visit(recursionDepth - 1, visited)
+        Next
+        For Each following As User In followings
+            out += following.login.__visit(recursionDepth - 1, visited)
+        Next
+
+        Return out
     End Function
 
     ''' <summary>
