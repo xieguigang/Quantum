@@ -1,4 +1,4 @@
-﻿Imports Microsoft.VisualBasic.DataVisualization.Network.FileStream
+﻿Imports Microsoft.VisualBasic.Data.visualize.Network.FileStream
 
 ''' <summary>
 ''' API for build a network model for d3js or cytoscape
