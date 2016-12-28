@@ -17,11 +17,14 @@ Public Module BuildNetwork
     ''' <returns></returns>
     Public Function FromUser(username As String, Optional recursionDepth% = 10) As Network
         Dim followers As User() = username.Followers
-        Dim following As User() = username.Following
+        Dim followings As User() = username.Following
         Dim visited As New List(Of String) '  A list of user name that we already have visited, to avoid the dead loop.
-        Dim gets As New List(Of User)
+        Dim gets As New List(Of UserModel)
 
         For Each user As User In followers
+            gets += user.login.__visit(recursionDepth, visited)
+        Next
+        For Each user As User In followings
             gets += user.login.__visit(recursionDepth, visited)
         Next
 
@@ -29,8 +32,31 @@ Public Module BuildNetwork
         Dim userNodes As New Dictionary(Of Node)
         Dim connections As New List(Of NetworkEdge)
 
-        For Each user As User In gets
+        For Each user As UserModel In gets
+            userNodes += New Node With {
+                .Identifier = user.User.login,
+                .NodeType = NameOf(user),
+                .Properties = New Dictionary(Of String, String) From {
+                    {NameOf(followers), user.Followers.Length},
+                    {NameOf(following), user.Followings.Length},
+                    {NameOf(connections), user.Followings.Length + user.Followers.Length}
+                }
+            }
 
+            For Each follower As String In user.Followers
+                connections += New NetworkEdge With {
+                    .FromNode = follower,
+                    .ToNode = user.User.login,
+                    .InteractionType = NameOf(follower)
+                }
+            Next
+            For Each following As String In user.Followings
+                connections += New NetworkEdge With {
+                    .FromNode = user.User.login,
+                    .ToNode = following,
+                    .InteractionType = NameOf(following)
+                }
+            Next
         Next
 
         Return New Network With {
@@ -40,7 +66,7 @@ Public Module BuildNetwork
     End Function
 
     <Extension>
-    Private Function __visit(username$, recursionDepth As int, visited As List(Of String)) As User()
+    Private Function __visit(username$, recursionDepth%, visited As List(Of String)) As UserModel()
 
     End Function
 
