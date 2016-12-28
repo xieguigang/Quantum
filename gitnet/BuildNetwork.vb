@@ -1,5 +1,6 @@
 ﻿Imports System.Runtime.CompilerServices
 Imports System.Text
+Imports Microsoft.VisualBasic.Data.csv
 Imports Microsoft.VisualBasic.Data.visualize.Network.FileStream
 Imports Microsoft.VisualBasic.Language
 Imports Microsoft.VisualBasic.Linq
@@ -29,11 +30,14 @@ Public Module BuildNetwork
         Dim visited As New List(Of String) '  A list of user name that we already have visited, to avoid the dead loop.
         Dim gets As New List(Of UserModel)
 
+        Call followers.SaveTo(work & "/followers.json")
+        Call followings.SaveTo(work & "/following.json")
+
         For Each user As User In followers
-            gets += user.login.__visit(recursionDepth, visited, maxFollows, work, $"/{username}/{NameOf(followers)}")
+            gets += user.login.__visit(recursionDepth, visited, maxFollows, work, $"/{NameOf(followers)}")
         Next
         For Each user As User In followings
-            gets += user.login.__visit(recursionDepth, visited, maxFollows, work, $"/{username}/{NameOf(followings)}")
+            gets += user.login.__visit(recursionDepth, visited, maxFollows, work, $"/{NameOf(followings)}")
         Next
 
         ' build network model
@@ -101,6 +105,11 @@ Public Module BuildNetwork
                 Call out _
                     .GetJson(True) _
                     .SaveTo(path, encoding:=Encoding.UTF8)
+
+                path = work & $"/{parent}/followers/{username}.json"
+                Call followers.SaveTo(path)
+                path = work & $"/{parent}/following/{username}.json"
+                Call followings.SaveTo(path)
 
                 Return out.ToArray
             End Function
