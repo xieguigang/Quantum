@@ -1,5 +1,6 @@
 ﻿Imports System.Runtime.CompilerServices
 Imports System.Text
+Imports System.Threading
 Imports Microsoft.VisualBasic.Data.csv
 Imports Microsoft.VisualBasic.Data.visualize.Network.FileStream
 Imports Microsoft.VisualBasic.Language
@@ -15,7 +16,7 @@ Imports Microsoft.VisualBasic.Webservices.Github.WebAPI
 ''' </summary>
 Public Module BuildNetwork
 
-    Public Function DownloadAvatar(DIR$) As Boolean
+    Public Sub DownloadAvatar(DIR$)
         Dim users As New List(Of User)
 
         For Each file$ In ls - l - r - "*.csv" <= DIR
@@ -27,16 +28,33 @@ Public Module BuildNetwork
                         Select user
                         Group user By user.login Into Group
 
-        For Each user In distincts
-            Dim name = user.login
-            Dim avatar = user.Group.First.avatar_url
-            Dim path$ = $"{DIR}/avatar/{name}.jpg"
+        users = New List(Of User)(distincts.ToArray.Select(Function(g) g.Group.First))
 
-            Call avatar.DownloadFile(path, WebAPI.Proxy)
-        Next
+        Call VBDebugger.WaitOutput()
 
-        Return True
-    End Function
+        Using progress As New Terminal.ProgressBar("Download github user avatar image...", cls:=True)
+            Dim tick As New Terminal.ProgressProvider(total:=users.Count)
+
+            Call Thread.Sleep(500)
+            Call tick.StepProgress()
+
+            For Each user As User In users
+                Dim name As String = user.login
+                Dim avatar = user.avatar_url
+                Dim path$ = $"{DIR}/avatar/{name}.jpg"
+
+                If Not path.FileExists Then
+                    Call avatar.DownloadFile(path, WebAPI.Proxy)
+                End If
+
+                Dim ETA = tick.ETA(progress.ElapsedMilliseconds).FormatTime
+
+                Call progress.SetProgress(
+                    tick.StepProgress,
+                    user.name & ", ETA=" & ETA)
+            Next
+        End Using
+    End Sub
 
     ''' <summary>
     ''' Build network model from user relationships.(从一个用户开始构建网络)

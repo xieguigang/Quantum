@@ -8,9 +8,13 @@ Module Program
         'Dim user = Microsoft.VisualBasic.Webservices.Github.API.GetUser("xieguigang")
 
         WebAPI.Proxy = "http://127.0.0.1:8087/"
+        Try
+            Call BuildNetwork.DownloadAvatar("G:\github-network\gitnet\bin\Debug\xieguigang")
+        Catch ex As Exception
+            Call ex.PrintException
+        End Try
 
 
-        Call BuildNetwork.DownloadAvatar("G:\github-network\gitnet\bin\Debug\xieguigang")
 
         Pause()
 
