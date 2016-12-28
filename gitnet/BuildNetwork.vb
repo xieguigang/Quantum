@@ -3,8 +3,10 @@ Imports System.Text
 Imports Microsoft.VisualBasic.Data.csv
 Imports Microsoft.VisualBasic.Data.visualize.Network.FileStream
 Imports Microsoft.VisualBasic.Language
+Imports Microsoft.VisualBasic.Language.UnixBash
 Imports Microsoft.VisualBasic.Linq
 Imports Microsoft.VisualBasic.Serialization.JSON
+Imports Microsoft.VisualBasic.Webservices.Github
 Imports Microsoft.VisualBasic.Webservices.Github.Class
 Imports Microsoft.VisualBasic.Webservices.Github.WebAPI
 
@@ -12,6 +14,29 @@ Imports Microsoft.VisualBasic.Webservices.Github.WebAPI
 ''' API for build a network model for d3js or cytoscape
 ''' </summary>
 Public Module BuildNetwork
+
+    Public Function DownloadAvatar(DIR$) As Boolean
+        Dim users As New List(Of User)
+
+        For Each file$ In ls - l - r - "*.csv" <= DIR
+            users += file.LoadCsv(Of User).AsEnumerable
+        Next
+
+        Dim distincts = From user As User
+                        In users
+                        Select user
+                        Group user By user.login Into Group
+
+        For Each user In distincts
+            Dim name = user.login
+            Dim avatar = user.Group.First.avatar_url
+            Dim path$ = $"{DIR}/avatar/{name}.jpg"
+
+            Call avatar.DownloadFile(path, WebAPI.Proxy)
+        Next
+
+        Return True
+    End Function
 
     ''' <summary>
     ''' Build network model from user relationships.(从一个用户开始构建网络)

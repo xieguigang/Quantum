@@ -9,6 +9,11 @@ Module Program
 
         WebAPI.Proxy = "http://127.0.0.1:8087/"
 
+
+        Call BuildNetwork.DownloadAvatar("G:\github-network\gitnet\bin\Debug\xieguigang")
+
+        Pause()
+
         Call BuildNetwork.FromUser("xieguigang", 0, 50).Save(App.HOME & "/xieguigang/")
 
         Pause()
