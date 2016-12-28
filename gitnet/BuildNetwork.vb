@@ -16,17 +16,17 @@ Public Module BuildNetwork
     ''' <param name="username"></param>
     ''' <param name="recursionDepth">从最开始的第一个用户开始递归，的最深的深度</param>
     ''' <returns></returns>
-    Public Function FromUser(username As String, Optional recursionDepth% = 10) As Network
-        Dim followers As User() = username.Followers
-        Dim followings As User() = username.Following
+    Public Function FromUser(username As String, Optional recursionDepth% = 10, Optional maxFollows% = 100) As Network
+        Dim followers As User() = username.Followers(maxFollows)
+        Dim followings As User() = username.Following(maxFollows)
         Dim visited As New List(Of String) '  A list of user name that we already have visited, to avoid the dead loop.
         Dim gets As New List(Of UserModel)
 
         For Each user As User In followers
-            gets += user.login.__visit(recursionDepth, visited)
+            gets += user.login.__visit(recursionDepth, visited, maxFollows)
         Next
         For Each user As User In followings
-            gets += user.login.__visit(recursionDepth, visited)
+            gets += user.login.__visit(recursionDepth, visited, maxFollows)
         Next
 
         ' build network model
@@ -39,7 +39,7 @@ Public Module BuildNetwork
                 .NodeType = NameOf(user),
                 .Properties = New Dictionary(Of String, String) From {
                     {NameOf(followers), user.Followers.Length},
-                    {NameOf(following), user.Followings.Length},
+                    {NameOf(Following), user.Followings.Length},
                     {NameOf(connections), user.Followings.Length + user.Followers.Length}
                 }
             }
@@ -66,8 +66,15 @@ Public Module BuildNetwork
         }
     End Function
 
+    ''' <summary>
+    ''' Get user's social network
+    ''' </summary>
+    ''' <param name="username$"></param>
+    ''' <param name="recursionDepth%"></param>
+    ''' <param name="visited"></param>
+    ''' <returns></returns>
     <Extension>
-    Private Function __visit(username$, recursionDepth%, visited As List(Of String)) As UserModel()
+    Private Function __visit(username$, recursionDepth%, visited As List(Of String), maxFollows%) As UserModel()
         Dim followers, followings As User()
 
         If recursionDepth < 0 Then
@@ -82,8 +89,8 @@ Public Module BuildNetwork
 
         Dim out As New List(Of UserModel)
 
-        followings = username.Following
-        followers = username.Followers
+        followings = username.Following(maxFollows)
+        followers = username.Followers(maxFollows)
 
         out += New UserModel With {
             .User = New User With {
@@ -94,10 +101,10 @@ Public Module BuildNetwork
         }
 
         For Each follower In followers
-            out += follower.login.__visit(recursionDepth - 1, visited)
+            out += follower.login.__visit(recursionDepth - 1, visited, maxFollows)
         Next
         For Each following As User In followings
-            out += following.login.__visit(recursionDepth - 1, visited)
+            out += following.login.__visit(recursionDepth - 1, visited, maxFollows)
         Next
 
         Return out
