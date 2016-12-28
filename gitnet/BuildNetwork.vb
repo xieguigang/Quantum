@@ -30,8 +30,8 @@ Public Module BuildNetwork
         Dim visited As New List(Of String) '  A list of user name that we already have visited, to avoid the dead loop.
         Dim gets As New List(Of UserModel)
 
-        Call followers.SaveTo(work & "/followers.json")
-        Call followings.SaveTo(work & "/following.json")
+        Call followers.SaveTo(work & "/followers.csv")
+        Call followings.SaveTo(work & "/following.csv")
 
         For Each user As User In followers
             gets += user.login.__visit(recursionDepth, visited, maxFollows, work, $"/{NameOf(followers)}")
@@ -106,9 +106,9 @@ Public Module BuildNetwork
                     .GetJson(True) _
                     .SaveTo(path, encoding:=Encoding.UTF8)
 
-                path = work & $"/{parent}/followers/{username}.json"
+                path = work & $"/{parent}/followers/{username}.csv"
                 Call followers.SaveTo(path)
-                path = work & $"/{parent}/following/{username}.json"
+                path = work & $"/{parent}/following/{username}.csv"
                 Call followings.SaveTo(path)
 
                 Return out.ToArray
