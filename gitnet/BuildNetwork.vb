@@ -75,8 +75,16 @@ Public Module BuildNetwork
     ''' <returns></returns>
     <Extension>
     Private Function __visit(username$, recursionDepth%, visited As List(Of String), maxFollows%) As UserModel()
-        Dim followings = username.Following(maxFollows)
-        Dim followers = username.Followers(maxFollows)
+        Dim followers, followings As User()
+
+        If visited.IndexOf(username) > -1 Then
+            Return {}
+        Else
+            visited += username
+
+            followings = username.Following(maxFollows)
+            followers = username.Followers(maxFollows)
+        End If
 
         Dim out As New List(Of UserModel)
 
@@ -91,11 +99,7 @@ Public Module BuildNetwork
         If recursionDepth < 0 Then
             Return out
         Else
-            If visited.IndexOf(username) > -1 Then
-                Return out
-            Else
-                visited += username
-            End If
+
         End If
 
         For Each follower In followers
