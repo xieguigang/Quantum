@@ -30,7 +30,8 @@ Public Module BuildNetwork
 
         users = New List(Of User)(distincts.ToArray.Select(Function(g) g.Group.First))
 
-        Call VBDebugger.WaitOutput()
+        VBDebugger.WaitOutput()
+        VBDebugger.Mute = True
 
         Using progress As New Terminal.ProgressBar("Download github user avatar image...", cls:=True)
             Dim tick As New Terminal.ProgressProvider(total:=users.Count)
