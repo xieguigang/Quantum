@@ -17,7 +17,7 @@ Module Program
 
         WebAPI.Proxy = "http://127.0.0.1:8087/"
 
-
+        Pause()
         Call BuildNetwork.FromUser("xieguigang", 0, 50).Save(App.HOME & "/xieguigang/")
 
         Pause()
@@ -82,7 +82,7 @@ Module Program
         Dim out = New Network With {
             .Edges = edges,
             .Nodes = nodes
-        }.RemovesByDegreeQuantile(0.1)
+        }.RemovesByDegreeQuantile(0.2)
 
         Return out
     End Function
