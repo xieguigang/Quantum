@@ -109,6 +109,10 @@
       <Project>{a60240d1-e78b-4b96-85e3-45256571c2cb}</Project>
       <Name>Microsoft.VisualBasic.Network</Name>
     </ProjectReference>
+    <ProjectReference Include="..\protocol\protocol.vbproj">
+      <Project>{6109ff20-1e5c-4421-819a-10ad12f68b63}</Project>
+      <Name>protocol</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
 </Project>
