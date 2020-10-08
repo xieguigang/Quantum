@@ -24,30 +24,7 @@ Public Class requestPackage(Of T As Class) : Implements ISerializable
     Public Property random As Double
 
     Public Function Serialize() As Byte() Implements ISerializable.Serialize
-        Dim header = ByteOrderHelper.GetBytes(random)
-        Dim data = getDataBuffer()
-        Dim key As String
-        Dim salt As String
-
-        If header(3) Mod 2 = 0 Then
-            key = Globals.Hash1
-            salt = Globals.Hash2
-        Else
-            key = Globals.Hash2
-            salt = Globals.Hash1
-        End If
-
-        ' 进行data数据部分的加密
-        Using encrypt As SecurityStringModel = New SHA256(key, salt.Substring(0, 8))
-            data = encrypt.Encrypt(header.JoinIterates(data).ToArray)
-        End Using
-
-        Dim buffer As Byte() = New Byte(header.Length + data.Length - 1) {}
-
-        Call Array.ConstrainedCopy(header, Scan0, buffer, Scan0, header.Length)
-        Call Array.ConstrainedCopy(data, Scan0, buffer, header.Length, data.Length)
-
-        Return buffer
+        Return Globals.EncryptData(random, getDataBuffer())
     End Function
 
     Private Function getDataBuffer() As Byte()
