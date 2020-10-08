@@ -1,8 +1,10 @@
-﻿Imports Microsoft.VisualBasic.ComponentModel
+﻿Imports System.Text
+Imports Microsoft.VisualBasic.ComponentModel
 Imports Microsoft.VisualBasic.Net
 Imports Microsoft.VisualBasic.Net.Protocols.Reflection
 Imports Microsoft.VisualBasic.Net.Tcp
 Imports Microsoft.VisualBasic.Parallel
+Imports Microsoft.VisualBasic.Text
 Imports Proxy.Protocol
 
 <Protocol(GetType(Protocols))>
@@ -26,6 +28,12 @@ Public Class ListenServer : Implements ITaskDriver, IDisposable
     <Protocol(Protocols.requestWeb)>
     Private Function requestWeb(request As RequestStream, remoteDevcie As IPEndPoint) As RequestStream
         Dim pkg = requestPackage(Of requestWeb).CreateObject(request.ChunkBuffer)
+        Dim text As String = pkg.data.HttpRequest
+        Dim result As Byte() = Encodings.UTF8WithoutBOM.CodePage.GetBytes(text)
+
+        result = Globals.EncryptData(pkg.random, result, appendSalt:=False)
+
+        Return New RequestStream(200, 0, result)
     End Function
 
     Protected Overridable Sub Dispose(disposing As Boolean)

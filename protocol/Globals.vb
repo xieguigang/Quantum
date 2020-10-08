@@ -19,7 +19,7 @@ Public Module Globals
         Return md5.ToLower
     End Function
 
-    Public Function EncryptData(random As Double, data As Byte()) As Byte()
+    Public Function EncryptData(random As Double, data As Byte(), Optional appendSalt As Boolean = True) As Byte()
         Dim salt = ByteOrderHelper.GetBytes(random)
         Dim key As String = GetHashKey64(salt)
 
@@ -28,14 +28,26 @@ Public Module Globals
             data = encrypt.Encrypt(data)
         End Using
 
-        Dim buffer As Byte() = New Byte(salt.Length + data.Length - 1) {}
+        If appendSalt Then
+            Dim buffer As Byte() = New Byte(salt.Length + data.Length - 1) {}
 
-        Call Array.ConstrainedCopy(salt, Scan0, buffer, Scan0, salt.Length)
-        Call Array.ConstrainedCopy(data, Scan0, buffer, salt.Length, data.Length)
+            Call Array.ConstrainedCopy(salt, Scan0, buffer, Scan0, salt.Length)
+            Call Array.ConstrainedCopy(data, Scan0, buffer, salt.Length, data.Length)
 
-        Return buffer
+            Return buffer
+        Else
+            Return data
+        End If
     End Function
 
+    ''' <summary>
+    ''' 使用两个程序模块文件来作为私有的加密证书
+    ''' 产生的弊端就是对应版本的服务器端只能够通信于
+    ''' 对应版本的客户端，每一次编译都必须要重新进行
+    ''' 部署，即使代码文本一摸一样
+    ''' </summary>
+    ''' <param name="salt"></param>
+    ''' <returns></returns>
     Public Function GetHashKey64(salt As Byte()) As String
         If salt(3) Mod 2 = 0 Then
             Return Globals.Hash1 & Globals.Hash2
