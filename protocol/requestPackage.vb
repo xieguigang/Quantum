@@ -5,14 +5,6 @@ Imports Microsoft.VisualBasic.MIME.application.json.Javascript
 Imports Microsoft.VisualBasic.Serialization
 Imports randf = Microsoft.VisualBasic.Math.RandomExtensions
 
-Public Enum Protocols As Long
-    ''' <summary>
-    ''' request html text
-    ''' </summary>
-    requestWeb = 100
-    downloadFile = 101
-End Enum
-
 Public Class requestPackage(Of T As Class) : Implements ISerializable
 
     Public Property data As T
