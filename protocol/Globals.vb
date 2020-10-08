@@ -1,5 +1,6 @@
 ﻿Imports System.Reflection
 Imports Microsoft.VisualBasic.Data.IO
+Imports Microsoft.VisualBasic.Net.Protocols.Reflection
 Imports Microsoft.VisualBasic.SecurityString
 
 Public Module Globals
@@ -7,9 +8,10 @@ Public Module Globals
     Public Property Hash1 As String = getHashKey(GetType(App).Assembly)
     Public Property Hash2 As String = getHashKey(GetType(Globals).Assembly)
     Public ReadOnly Property byteOrder As ByteOrder = ByteOrderHelper.SystemByteOrder
+    Public ReadOnly Property protocol As Long
 
     Sub New()
-
+        protocol = New ProtocolAttribute(GetType(Protocols)).EntryPoint
     End Sub
 
     Private Function getHashKey(assm As Assembly) As String
@@ -80,6 +82,14 @@ Public Module Globals
         End Using
 
         Return data
+    End Function
+
+    Public Function DecryptData(random As Double, data As Byte()) As Byte()
+        Dim salt = ByteOrderHelper.GetBytes(random)
+
+        Using encrypt As SecurityStringModel = New SHA256(GetHashKey64(salt), salt)
+            Return encrypt.Decrypt(data)
+        End Using
     End Function
 
 End Module
