@@ -23,4 +23,8 @@ Public Module Handlers
 
         Return text
     End Function
+
+    Public Function GetFile(url As String, saveAs As String, proxy As String) As Boolean
+
+    End Function
 End Module
