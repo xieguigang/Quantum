@@ -26,7 +26,7 @@ Public Class ListenServer : Implements ITaskDriver, IDisposable
     End Function
 
     <Protocol(Protocols.requestWeb)>
-    Private Function requestWeb(request As RequestStream, remoteDevcie As IPEndPoint) As RequestStream
+    Friend Function requestWeb(request As RequestStream, remoteDevcie As IPEndPoint) As RequestStream
         Dim pkg = requestPackage(Of requestWeb).CreateObject(request.ChunkBuffer)
         Dim text As String = pkg.data.HttpRequest
         Dim result As Byte() = Encodings.UTF8WithoutBOM.CodePage.GetBytes(text)
