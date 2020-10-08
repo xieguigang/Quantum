@@ -23,7 +23,7 @@ Module Module1
         '   Dim obj2 = requestPackage(Of requestWeb).CreateObject(tmp)
         Dim result As RequestStream = New TcpRequest(New IPEndPoint("127.0.0.1:232")).SendMessage(request)
 
-        Dim text As String = Encodings.UTF8.CodePage.GetString(Globals.DecryptData(message.random, request.ChunkBuffer))
+        Dim text As String = Encodings.UTF8.CodePage.GetString(Globals.DecryptData(message.random, result.ChunkBuffer))
 
         Pause()
     End Sub
