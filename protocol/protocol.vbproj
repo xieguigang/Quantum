@@ -87,10 +87,11 @@
     <Import Include="System.Threading.Tasks" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Handlers.vb" />
     <Compile Include="Protocols.vb" />
     <Compile Include="Globals.vb" />
-    <Compile Include="requestWeb.vb" />
-    <Compile Include="requestPackage.vb" />
+    <Compile Include="Models\requestWeb.vb" />
+    <Compile Include="Models\requestPackage.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
       <AutoGen>True</AutoGen>
