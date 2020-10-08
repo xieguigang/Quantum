@@ -2,6 +2,7 @@
 Imports Microsoft.VisualBasic.MIME.application.json
 Imports Microsoft.VisualBasic.MIME.application.json.BSON
 Imports Microsoft.VisualBasic.MIME.application.json.Javascript
+Imports Microsoft.VisualBasic.Serialization
 
 Public Enum Protocols As Long
     ''' <summary>
@@ -11,7 +12,7 @@ Public Enum Protocols As Long
     downloadFile = 101
 End Enum
 
-Public Class requestPackage(Of T As Class)
+Public Class requestPackage(Of T As Class) : Implements ISerializable
 
     Public Property data As T
     ''' <summary>
@@ -19,6 +20,11 @@ Public Class requestPackage(Of T As Class)
     ''' </summary>
     ''' <returns></returns>
     Public Property random As Double
+
+    Public Function Serialize() As Byte() Implements ISerializable.Serialize
+        Dim header = BitConverter.GetBytes(random)
+
+    End Function
 
     Private Function getDataBuffer() As Byte()
         Return GetType(T) _
