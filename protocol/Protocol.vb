@@ -35,4 +35,15 @@ Public Class requestPackage(Of T As Class) : Implements ISerializable
             .ToArray
     End Function
 
+    Public Shared Function CreateObject(buffer As Byte()) As requestPackage(Of T)
+        Dim random As Double = Globals.GetRandomKey(buffer)
+        Dim data As Byte() = Globals.DecryptData(buffer)
+        Dim json As JsonObject = BSONFormat.Load(data)
+        Dim obj As T = json.CreateObject(Of T)
+
+        Return New requestPackage(Of T) With {
+            .data = obj,
+            .random = random
+        }
+    End Function
 End Class
