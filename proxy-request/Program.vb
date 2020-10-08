@@ -9,9 +9,9 @@ Module Program
     End Function
 
     <ExportAPI("/listen")>
-    <Usage("/listen [/port <default=2588>]")>
+    <Usage("/listen [/port <default=232>]")>
     Public Function listen(args As CommandLine) As Integer
-        Using server As New ListenServer(port:=args("/port") Or 2588)
+        Using server As New ListenServer(port:=args("/port") Or 232)
             Return server.Run
         End Using
     End Function
