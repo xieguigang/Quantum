@@ -21,27 +21,24 @@ Public Module Globals
     End Function
 
     Public Function EncryptData(random As Double, data As Byte()) As Byte()
-        Dim header = ByteOrderHelper.GetBytes(random)
+        Dim salt = ByteOrderHelper.GetBytes(random)
         Dim key As String
-        Dim salt As String
 
-        If header(3) Mod 2 = 0 Then
-            key = Globals.Hash1
-            salt = Globals.Hash2
+        If salt(3) Mod 2 = 0 Then
+            key = Globals.Hash1 & Globals.Hash2
         Else
-            key = Globals.Hash2
-            salt = Globals.Hash1
+            key = Globals.Hash2 & Globals.Hash1
         End If
 
         ' 进行data数据部分的加密
-        Using encrypt As SecurityStringModel = New SHA256(key, salt.Substring(0, 8))
-            data = encrypt.Encrypt(header.JoinIterates(data).ToArray)
+        Using encrypt As SecurityStringModel = New SHA256(key, salt)
+            data = encrypt.Encrypt(data)
         End Using
 
-        Dim buffer As Byte() = New Byte(header.Length + data.Length - 1) {}
+        Dim buffer As Byte() = New Byte(salt.Length + data.Length - 1) {}
 
-        Call Array.ConstrainedCopy(header, Scan0, buffer, Scan0, header.Length)
-        Call Array.ConstrainedCopy(data, Scan0, buffer, header.Length, data.Length)
+        Call Array.ConstrainedCopy(salt, Scan0, buffer, Scan0, salt.Length)
+        Call Array.ConstrainedCopy(data, Scan0, buffer, salt.Length, data.Length)
 
         Return buffer
     End Function
@@ -56,6 +53,11 @@ Public Module Globals
         End If
 
         Return BitConverter.ToDouble(chunk8, Scan0)
+    End Function
+
+    Public Function DecryptData(data As Byte()) As Byte()
+
+
     End Function
 
 End Module
