@@ -58,7 +58,7 @@ Public Module Globals
 
     Public Function DecryptData(data As Byte()) As Byte()
         Dim salt As Byte() = New Byte(7) {}
-        Dim buffer As Byte() = New Byte(data.Length - 8) {}
+        Dim buffer As Byte() = New Byte(data.Length - 8 - 1) {}
 
         Call Array.ConstrainedCopy(data, Scan0, salt, Scan0, 8)
         Call Array.ConstrainedCopy(data, 8, buffer, Scan0, buffer.Length)
