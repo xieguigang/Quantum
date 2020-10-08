@@ -1,10 +1,9 @@
-﻿Imports Microsoft.VisualBasic.Data.IO
-Imports Microsoft.VisualBasic.Linq
+﻿Imports Microsoft.VisualBasic.Linq
 Imports Microsoft.VisualBasic.MIME.application.json
 Imports Microsoft.VisualBasic.MIME.application.json.BSON
 Imports Microsoft.VisualBasic.MIME.application.json.Javascript
-Imports Microsoft.VisualBasic.SecurityString
 Imports Microsoft.VisualBasic.Serialization
+Imports randf = Microsoft.VisualBasic.Math.RandomExtensions
 
 Public Enum Protocols As Long
     ''' <summary>
@@ -33,6 +32,15 @@ Public Class requestPackage(Of T As Class) : Implements ISerializable
             .As(Of JsonObject) _
             .DoCall(AddressOf BSONFormat.GetBuffer) _
             .ToArray
+    End Function
+
+    Public Shared Function Create(obj As T) As requestPackage(Of T)
+        Static seed As Random = randf.seeds
+
+        Return New requestPackage(Of T) With {
+            .data = obj,
+            .random = seed.NextDouble
+        }
     End Function
 
     Public Shared Function CreateObject(buffer As Byte()) As requestPackage(Of T)
