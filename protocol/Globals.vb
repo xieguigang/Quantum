@@ -10,8 +10,15 @@ Public Module Globals
     Public ReadOnly Property byteOrder As ByteOrder = ByteOrderHelper.SystemByteOrder
     Public ReadOnly Property protocol As Long
 
+    Public ReadOnly Property verbose As Boolean = False
+
     Sub New()
         protocol = New ProtocolAttribute(GetType(Protocols)).EntryPoint
+        verbose = App.CommandLine("--verbose")
+
+        If verbose Then
+            Call "'--verbose' debug option is turn on!".__DEBUG_ECHO
+        End If
     End Sub
 
     Private Function getHashKey(assm As Assembly) As String
@@ -24,6 +31,10 @@ Public Module Globals
     Public Function EncryptData(random As Double, data As Byte(), Optional appendSalt As Boolean = True) As Byte()
         Dim salt = ByteOrderHelper.GetBytes(random)
         Dim key As String = GetHashKey64(salt)
+
+        If verbose Then
+            Call printSaltBytes(salt)
+        End If
 
         ' 进行data数据部分的加密
         Using encrypt As SecurityStringModel = New SHA256(key, salt)
@@ -70,12 +81,20 @@ Public Module Globals
         Return BitConverter.ToDouble(chunk8, Scan0)
     End Function
 
+    Private Sub printSaltBytes(salt As Byte())
+        Call $"salt value for decryption is: {salt.Select(Function(a) a.ToHexString).JoinBy("-")}".__DEBUG_ECHO
+    End Sub
+
     Public Function DecryptData(data As Byte()) As Byte()
         Dim salt As Byte() = New Byte(7) {}
         Dim buffer As Byte() = New Byte(data.Length - 8 - 1) {}
 
         Call Array.ConstrainedCopy(data, Scan0, salt, Scan0, 8)
         Call Array.ConstrainedCopy(data, 8, buffer, Scan0, buffer.Length)
+
+        If verbose Then
+            Call printSaltBytes(salt)
+        End If
 
         Using encrypt As SecurityStringModel = New SHA256(GetHashKey64(salt), salt)
             data = encrypt.Decrypt(buffer)

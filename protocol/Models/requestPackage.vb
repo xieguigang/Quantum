@@ -35,11 +35,21 @@ Public Class requestPackage(Of T As Class) : Implements ISerializable
         }
     End Function
 
+    ''' <summary>
+    ''' 数据在这个函数创建数据包对象的时候已经被解密了
+    ''' </summary>
+    ''' <param name="buffer"></param>
+    ''' <returns></returns>
     Public Shared Function CreateObject(buffer As Byte()) As requestPackage(Of T)
         Dim random As Double = Globals.GetRandomKey(buffer)
         Dim data As Byte() = Globals.DecryptData(buffer)
         Dim json As JsonObject = BSONFormat.Load(data)
         Dim obj As T = json.CreateObject(Of T)
+
+        If Globals.verbose Then
+            Call $"request data packages:".__DEBUG_ECHO
+            Call obj.GetJson.__DEBUG_ECHO
+        End If
 
         Return New requestPackage(Of T) With {
             .data = obj,

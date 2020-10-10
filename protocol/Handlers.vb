@@ -18,6 +18,11 @@ Public Module Handlers
         Dim message = requestPackage(Of requestWeb).Create(obj)
         Dim request As New RequestStream(Globals.protocol, Protocols.requestWeb, message.Serialize)
         Dim result As RequestStream = New TcpRequest(New IPEndPoint(proxy)).SendMessage(request)
+
+        If result.ProtocolCategory <> 200 Then
+            Throw New Exception(result.GetString(Encoding.UTF8))
+        End If
+
         Dim tmp As Byte() = Globals.DecryptData(message.random, result.ChunkBuffer)
         Dim text As String = textEncoder.GetString(tmp)
 
@@ -25,6 +30,6 @@ Public Module Handlers
     End Function
 
     Public Function GetFile(url As String, saveAs As String, proxy As String) As Boolean
-
+        Throw New NotImplementedException
     End Function
 End Module
