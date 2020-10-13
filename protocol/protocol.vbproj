@@ -88,6 +88,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Handlers.vb" />
+    <Compile Include="Models\httpRequest.vb" />
+    <Compile Include="Models\requestFile.vb" />
     <Compile Include="Protocols.vb" />
     <Compile Include="Globals.vb" />
     <Compile Include="Models\requestWeb.vb" />

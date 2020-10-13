@@ -1,11 +1,7 @@
 ﻿''' <summary>
 ''' request web text
 ''' </summary>
-Public Class requestWeb
-
-    Public Property url As String
-    Public Property headers As Dictionary(Of String, String)
-    Public Property method As String
+Public Class requestWeb : Inherits httpRequest
 
     Public Function HttpRequest() As String
         If method.TextEquals("GET") Then
