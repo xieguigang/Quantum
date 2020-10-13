@@ -1,4 +1,5 @@
-﻿Imports System.Text
+﻿Imports System.IO
+Imports System.Text
 Imports Microsoft.VisualBasic.ComponentModel
 Imports Microsoft.VisualBasic.Net
 Imports Microsoft.VisualBasic.Net.Protocols.Reflection
@@ -35,6 +36,13 @@ Public Class ListenServer : Implements ITaskDriver, IDisposable
 
         Return New RequestStream(200, 0, result)
     End Function
+
+    <Protocol(Protocols.downloadFile)>
+    Friend Sub requestFile(request As RequestStream, response As Stream)
+        Call requestPackage(Of requestFile) _
+            .CreateObject(request.ChunkBuffer).data _
+            .HttpRequest(response)
+    End Sub
 
     Protected Overridable Sub Dispose(disposing As Boolean)
         If Not disposedValue Then
