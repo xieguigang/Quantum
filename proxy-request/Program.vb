@@ -1,5 +1,6 @@
 ﻿Imports Microsoft.VisualBasic.CommandLine
 Imports Microsoft.VisualBasic.CommandLine.Reflection
+Imports Microsoft.VisualBasic.Net.HTTP
 Imports Proxy.Protocol
 Imports services
 
@@ -32,6 +33,17 @@ Module Program
         Return Handlers.GetHttpText(url, proxy) _
             .SaveTo(save) _
             .CLICode
+    End Function
+
+    <ExportAPI("/file")>
+    <Usage("/file /url <url> /proxy <ip:port> [/save <save.file>]")>
+    Public Function file(args As CommandLine) As Integer
+        Dim url As String = args("/url")
+        Dim proxy As String = args("/proxy")
+        Dim fileName As String = New URL(url).path
+        Dim save As String = args("/save") Or $"./{fileName}"
+
+        Return Handlers.GetFile(url, save, proxy).CLICode
     End Function
 
 End Module

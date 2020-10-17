@@ -1,4 +1,5 @@
-﻿Imports System.Text
+﻿Imports System.IO
+Imports System.Text
 Imports Microsoft.VisualBasic.Net
 Imports Microsoft.VisualBasic.Net.Tcp
 Imports Microsoft.VisualBasic.Parallel
@@ -29,7 +30,20 @@ Public Module Handlers
         Return text
     End Function
 
-    Public Function GetFile(url As String, saveAs As String, proxy As String) As Boolean
-        Throw New NotImplementedException
+    Public Function GetFile(url As String, saveAs As String, proxy As String, Optional headers As Dictionary(Of String, String) = Nothing) As Boolean
+        Dim obj As New requestFile With {
+            .headers = If(headers, New Dictionary(Of String, String)),
+            .method = "GET",
+            .url = url
+        }
+
+        Dim message = requestPackage(Of requestFile).Create(obj)
+        Dim request As New RequestStream(Globals.protocol, Protocols.downloadFile, message.Serialize)
+
+        Using file As FileStream = saveAs.Open
+            Call New TcpRequest(New IPEndPoint(proxy)).RequestToStream(request, file)
+        End Using
+
+        Return True
     End Function
 End Module
