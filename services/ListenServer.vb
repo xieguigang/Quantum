@@ -1,6 +1,4 @@
-﻿Imports System.IO
-Imports System.Text
-Imports Microsoft.VisualBasic.ComponentModel
+﻿Imports Microsoft.VisualBasic.ComponentModel
 Imports Microsoft.VisualBasic.Net
 Imports Microsoft.VisualBasic.Net.Protocols.Reflection
 Imports Microsoft.VisualBasic.Net.Tcp
@@ -27,22 +25,22 @@ Public Class ListenServer : Implements ITaskDriver, IDisposable
     End Function
 
     <Protocol(Protocols.requestWeb)>
-    Friend Function requestWeb(request As RequestStream) As RequestStream
+    Friend Function requestWeb(request As RequestStream) As BufferPipe
         Dim pkg = requestPackage(Of requestWeb).CreateObject(request.ChunkBuffer)
         Dim text As String = pkg.data.HttpRequest
         Dim result As Byte() = Encodings.UTF8WithoutBOM.CodePage.GetBytes(text)
 
         result = Globals.EncryptData(pkg.random, result, appendSalt:=False)
 
-        Return New RequestStream(200, 0, result)
+        Return New DataPipe(New RequestStream(200, 0, result))
     End Function
 
     <Protocol(Protocols.downloadFile)>
-    Friend Sub requestFile(request As RequestStream, response As Stream)
-        Call requestPackage(Of requestFile) _
+    Friend Function requestFile(request As RequestStream) As BufferPipe
+        Return requestPackage(Of requestFile) _
             .CreateObject(request.ChunkBuffer).data _
-            .HttpRequest(response)
-    End Sub
+            .HttpRequest()
+    End Function
 
     Protected Overridable Sub Dispose(disposing As Boolean)
         If Not disposedValue Then
