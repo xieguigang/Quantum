@@ -11,6 +11,7 @@
 *.userprefs
 
 Apps/
+assembly/
 
 # Build results
 [Dd]ebug/
@@ -238,3 +239,4 @@ _Pvt_Extensions
 .fake/
 .Rproj.user
 Quantum.zip
+*.dll
