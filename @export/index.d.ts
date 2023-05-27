@@ -8,4 +8,7 @@ declare namespace Quantum {
       */
       function onLoad(): object;
    }
+   /**
+   */
+   function MResetZ(q: any): object;
 }
