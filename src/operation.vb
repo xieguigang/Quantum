@@ -7,9 +7,14 @@ Imports SMRUCC.Rsharp.Runtime.Interop
 <RTypeExport("Qubit", GetType(QubitVM))>
 Public Module operations
 
+    ''' <summary>
+    ''' allocate a register of n qubits in |0> 
+    ''' </summary>
+    ''' <param name="n"></param>
+    ''' <returns></returns>
     <ExportAPI("Qubit")>
-    Public Function Qubit() As QubitVM
-        Return New QubitVM
+    Public Function Qubit(Optional n As Integer = 1) As QubitVM
+        Return New QubitVM(n)
     End Function
 
     ''' <summary>
@@ -18,8 +23,9 @@ Public Module operations
     ''' <param name="q"></param>
     ''' <returns></returns>
     <ExportAPI("H")>
-    Public Function H(q As QubitVM)
-
+    Public Function H(q As QubitVM) As QubitVM
+        Call q.H()
+        Return q
     End Function
 
     ''' <summary>
@@ -28,8 +34,8 @@ Public Module operations
     ''' <param name="q"></param>
     ''' <returns></returns>
     <ExportAPI("M")>
-    Public Function M(q As QubitVM)
-
+    Public Function M(q As QubitVM) As Object
+        Return q.M
     End Function
 
     ''' <summary>
@@ -38,7 +44,7 @@ Public Module operations
     ''' <param name="q"></param>
     ''' <returns></returns>
     <ExportAPI("X")>
-    Public Function X(q As QubitVM)
-
-    End Function
+    Public Sub X(q As QubitVM)
+        Call q.Dispose()
+    End Sub
 End Module
