@@ -19,7 +19,12 @@ Public Module operations
     End Function
 
     ''' <summary>
-    ''' Hadamard operation H to the state
+    ''' Hadamard operation H to the state, Put a qubit in superposition
+    ''' 
+    ''' To put a qubit in superposition, R# provides the H, or Hadamard, operation.
+    ''' the H operation flips the qubit halfway into a state of equal probabilities 
+    ''' of 0 or 1. When measured, a qubit in superposition should return roughly an
+    ''' equal number of Zero and One results.
     ''' </summary>
     ''' <param name="q"></param>
     ''' <returns></returns>
