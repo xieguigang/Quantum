@@ -1,6 +1,7 @@
 ﻿
 Imports Microsoft.VisualBasic.CommandLine.Reflection
 Imports Microsoft.VisualBasic.Scripting.MetaData
+Imports Quantum.VM
 Imports SMRUCC.Rsharp.Runtime.Interop
 
 <Package("operations")>
