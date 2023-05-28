@@ -1,4 +1,5 @@
-﻿Imports randf = Microsoft.VisualBasic.Math.RandomExtensions
+﻿Imports System.Runtime.CompilerServices
+Imports randf = Microsoft.VisualBasic.Math.RandomExtensions
 
 Namespace VM
 
@@ -27,6 +28,7 @@ Namespace VM
 
         End Sub
 
+        <MethodImpl(MethodImplOptions.AggressiveInlining)>
         Public Function M() As QubitStates()
             Return (From q As Qubit In qubits Select q.state).ToArray
         End Function

@@ -1,4 +1,5 @@
 ﻿
+Imports System.Runtime.CompilerServices
 Imports randf = Microsoft.VisualBasic.Math.RandomExtensions
 
 Namespace VM
@@ -21,15 +22,10 @@ Namespace VM
             Me.h = h
         End Sub
 
+        <MethodImpl(MethodImplOptions.AggressiveInlining)>
         Public Overrides Function ToString() As String
             Return state.Description
         End Function
 
     End Class
-
-    Public Enum QubitStates
-        Zero
-        One
-    End Enum
-
 End Namespace
